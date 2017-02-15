@@ -8,5 +8,5 @@
 Thumbs.db
 
 #frontend
-**/frontend
+/frontend
 /backend/__pycache__

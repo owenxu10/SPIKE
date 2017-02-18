@@ -9,15 +9,34 @@ from to_js import get_question
 # other things) that you think in terms of resources and state
 # transitions, which map to HTTP verbs.
 class ThingsResource(object):
+
     def on_get(self, req, resp,question):
         """Handles GET requests"""
-        res = ''
-        questionSet = get_question(question);
-        for cate in questionSet:
-        	res = res+cate
-        resp.status = falcon.HTTP_200  # This is the default status
+        # {
+        #     "results": [
+        #         {
+        #             "name": "Google"
+        #         },
+        #         {
+        #             "name": "Baidu"
+        #         },
+        #         {
+        #             "name": "SoSo"        
+        #         }
+        #     ]
+        # }
+        jsondata = '{"results":['        
+        results = get_question(question);
 
-        resp.body = '{"message":"'+ cate +'"}'
+        for result in results:
+            jsondata = jsondata+'{"category":"'+result+'"},'
+
+        jsondata = jsondata[:-1] + ']}'
+        
+        resp.status = falcon.HTTP_200  
+
+        resp.body = jsondata
+        
 
 # falcon.API instances are callable WSGI apps
 app = falcon.API()

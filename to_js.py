@@ -15,4 +15,11 @@ def get_question(question):
 	test_list.append("test1")
 	test_list.append("test1")
 	test_list.append("test1")
-	return	test_list
+
+	test_list2 = []
+	test_list2.append("test2")
+	test_list2.append("test2")
+	test_list2.append("test2")
+
+
+	return	(test_list,test_list2)

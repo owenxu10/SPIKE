@@ -3,35 +3,42 @@
 
 # Let's get this party started!
 import falcon
-from to_js import get_question
+from evalnn import evaluation
 
 # Falcon follows the REST architectural style, meaning (among
 # other things) that you think in terms of resources and state
 # transitions, which map to HTTP verbs.
 class ThingsResource(object):
 
+    def __init__(self):      
+        self.eva = evaluation()
+
     def on_get(self, req, resp,question):
-        """Handles GET requests"""
-        # {
-        #     "results": [
-        #         {
-        #             "name": "Google"
-        #         },
-        #         {
-        #             "name": "Baidu"
-        #         },
-        #         {
-        #             "name": "SoSo"        
-        #         }
-        #     ]
-        # }
-        jsondata = '{"results":['        
-        results = get_question(question);
+        code = 0
+        jsondata = '{"desc":[' 
+        (desc,category) = self.eva.prediction(question);
 
-        for result in results:
-            jsondata = jsondata+'{"category":"'+result+'"},'
+        for result in desc:
+            if len(result)!=0:
+                jsondata = jsondata+'{"name":"'+result+'"},'
+            if result == "需要更多描述":
+                code = 1
 
-        jsondata = jsondata[:-1] + ']}'
+        jsondata = jsondata[:-1] + '],"category":['
+
+        for result in category:
+            if result == "需要更多描述":
+                code = 1
+            if len(result)!=0:
+                jsondata = jsondata+'{"name":"'+result+'"},'
+
+
+        if len(category) == 0:
+            jsondata = jsondata + '],"code":"'
+        else:
+            jsondata = jsondata[:-1] + '],"code":"'
+
+        jsondata = jsondata + str(code) + '"}'
         
         resp.status = falcon.HTTP_200  
 
